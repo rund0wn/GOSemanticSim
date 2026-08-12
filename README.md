@@ -10,17 +10,16 @@ Two independent implementations live here:
 | `Lins_Similarity/` | Python + [goatools](https://github.com/tanghaibao/goatools) | Computes a labelled BMA Lin-similarity matrix from a TSV of protein → GO term annotations |
 | `groovy_semantics/` | Groovy + [SML / slib](https://www.semantic-measures-library.org/) | Information content and pairwise/set similarity over the GO DAG |
 
-## Data files (not in this repo)
+## Data files
 
-The contents of `go_data/` are gitignored — ~130 MB of public GO reference data.
-Fetch it with the checked-in script:
+Download GO reference data:
 
 ```bash
-bash go_data/download.sh            # defaults to release 2025-07-22
-bash go_data/download.sh 2019-06-09 # or any other release
+bash go_data/download.sh            # DEFAULT (r2025-07-22)
+bash go_data/download.sh {YYYY-MM-DD} # To download any other release
 ```
 
-That produces:
+Expected output:
 
 ```
 go_data/
@@ -30,14 +29,11 @@ go_data/
     └── filtered_goa_uniprot_all_noiea.gaf # UniProt GOA, IEA evidence removed
 ```
 
-Both files come from the same release directory on
+Both files come from the same release directory
 http://release.geneontology.org/, and that is not incidental: information
-content is computed from the annotation corpus against the DAG, so pairing a
-`go.obo` with a `.gaf` from a different release silently shifts every IC value.
-Keeping them in a per-release directory makes the pairing hard to get wrong.
+content is computed from the UniProt database annotations `.gaf` against the GO DAG `go.obo`.
 
-The `noiea` corpus has `IEA` (electronically inferred) annotations dropped,
-leaving an experimental-evidence background.
+**Note: The `noiea` gaf does not include `IEA` (electronically inferred) annotations.**
 
 To use a release other than the default, either edit `GO_RELEASE` in
 `calc_MF_Lin_set_sim.py` or pass `--go-obo` / `--gaf` explicitly.

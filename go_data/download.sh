@@ -1,9 +1,9 @@
 #!/bin/bash
-# Download the GO reference data this project needs.
+# Download GO reference data.
 #
 # The ontology and the annotation corpus MUST come from the same GO release --
 # information content is computed against the annotations, and a mismatched DAG
-# silently changes the IC values. Both files therefore land in go_data/<release>/.
+# silently changes the IC values. Both files will download to go_data/<release>/.
 #
 # Usage: bash go_data/download.sh [release]   (default: 2025-07-22)
 
