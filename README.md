@@ -11,7 +11,12 @@ Two independent implementations:
 | `groovy_semantics/` | Groovy + [SML / slib](https://www.semantic-measures-library.org/) | Information content and pairwise/set similarity over the GO DAG |
 
 
-## Quick run :arrow_forward:
+## Quick uses :arrow_forward:
+### IC table
+Read-to-use [information content (IC) table](Lins_Similarity/IC_deepFRI2_preds.tsv) for deepFRI2 output.
+More information in [IC table](#ic-table)
+
+### Functional similarity
 Generate a pairwise functional similarity matrix from protein GO term annotations.
 
 1. Download reference data (`.gaf` and `.obo`)
@@ -23,7 +28,7 @@ bash go_data/download.sh            # DEFAULT (r2025-07-22)
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 ```
-3. Generate functional similarity matrix (Lin's + BMA)
+3. Generate functional similarity matrix (Lin's + BMA), input/out described in [Python usage](#python-usage)
 ```bash
 cd Lins_Similarity
 python calc_MF_Lin_set_sim.py {INPUT}.tsv {OUTPUT}.tsv
@@ -59,7 +64,7 @@ bash go_data/download.sh {YYYY-MM-DD} # Date of other GO release
 ---
 
 ### IC table
-To generate a GO term → information content (IC) table:
+To generate a new GO term → information content (IC) table:
 
 ```bash
 cd Lins_Similarity
@@ -77,7 +82,7 @@ python build_ic_table.py {OUTPUT}.tsv --namespace BP --covered-only
 
 Columns: `GO_ID`, `name`, `namespace`, `depth`, `n_annotated`, `IC`, `IC_topology`.
 
-**Useful information:**
+**Useful information:** :information_source:
 - `IC` = `-log(n_annotated / corpus_size)` where the corpus is the reference data (`.gaf`). This is what `calc_MF_Lin_set_sim.py` uses.
     - *Each sub-ontology has its own root and corpus size, so IC is computed per sub-ontology.*
     - *`IC = 0` means maximally general (root), but `goatools` also returns `0.0` for terms without annotations. The two are distinguished by `n_annotated`, where unsupported terms get a blank `IC`, not a zero.*
@@ -86,7 +91,7 @@ Columns: `GO_ID`, `name`, `namespace`, `depth`, `n_annotated`, `IC`, `IC_topolog
     - **`IC` low, `IC_topology` high**: usually well-studied leaf. `GO:0042803 protein homodimerization activity` has `IC=3.00` (very frequently annotated) but `IC_topology=1.00` (no descendants).
     - **`IC` high, `IC_topology` low**: a broad term with few annotations. `GO:0140852 histone ubiquitin ligase activity` achieves `IC` 10.14 on a *single* annotated protein, yet `IC_topology=0.71` reveals it's close to the root of the DAG. Use `IC_topology` to spot these; raw `IC` makes them look very informative.
 
-**Notes:**
+**Notes:** :open_book:
 - Coverage in the `noiea` corpus is small for rarely studied terms, where 57-63% of terms have no annotation support.
 > [!NOTE] 
 > Restricting to the DeepFRI2 term space is much better: 851/858 MF, 3,796/3,994 BP, 572/615 CC.
@@ -96,12 +101,11 @@ Columns: `GO_ID`, `name`, `namespace`, `depth`, `n_annotated`, `IC`, `IC_topolog
 
 ### Python usage
 
-Described in [Quick run](#quick-run)
+Follow steps described in [Quick run](#quick-run)
 **Note:** `GUIDE_semantic_similarity.ipynb` walks through the method.
 
 #### Input
-`.tsv` of `Protein<TAB>GO1<TAB>GO2...` (an optional header row may
-start with `Protein`).
+`.tsv` of `Protein1<\t>GO1<\t>GO2<\n>Protein2<\t>GO1...` (optional header row).
 
 #### Output
 `.tsv` of pairwise similarity scores between proteins.
