@@ -8,15 +8,15 @@ Two independent implementations:
 | Directory | Stack | What it does |
 |---|---|---|
 | `Lins_Similarity/` | Python + [goatools](https://github.com/tanghaibao/goatools) | Computes a pairwise functional similarity matrix (Lin's similarity + BMA) from protein → GO term annotations |
-| `groovy_semantics/` | Groovy + [SML / slib](https://www.semantic-measures-library.org/) | Information content and pairwise/set similarity over the GO DAG |
+| `groovy_semantics/` | Groovy + [SML / slib](https://www.semantic-measures-library.org/) | IC and pairwise/set similarity, mostly corpus-based |
 
 
 ## Quick uses :arrow_forward:
-### IC table
-Read-to-use [information content (IC) table](Lins_Similarity/IC_deepFRI2_preds.tsv) for deepFRI2 output.
+### :memo: IC table
+Ready-to-use [information content (IC) table](Lins_Similarity/IC_deepFRI2_preds.tsv) for deepFRI2 output.
 More information in [Information Content](#information-content)
 
-### Functional similarity
+### :computer: Functional similarity
 Generate a pairwise functional similarity matrix from protein GO term annotations.
 
 1. Download reference data (`.gaf` and `.obo`)
@@ -82,7 +82,7 @@ python build_ic_table.py {OUTPUT}.tsv --namespace BP --covered-only
 
 Columns: `GO_ID`, `name`, `namespace`, `depth`, `n_annotated`, `IC`, `IC_topology`.
 
-**Useful information:** :information_source:
+:information_source: **Useful info**
 - `IC` = `-log(n_annotated / corpus_size)` where the corpus is the reference data (`.gaf`). This is what `calc_MF_Lin_set_sim.py` uses.
     - *Each sub-ontology has its own root and corpus size, so IC is computed per sub-ontology.*
     - *`IC = 0` means maximally general (root), but `goatools` also returns `0.0` for terms without annotations. The two are distinguished by `n_annotated`, where unsupported terms get a blank `IC`, not a zero.*
@@ -91,7 +91,7 @@ Columns: `GO_ID`, `name`, `namespace`, `depth`, `n_annotated`, `IC`, `IC_topolog
     - **`IC` low, `IC_topology` high**: usually well-studied leaf. `GO:0042803 protein homodimerization activity` has `IC=3.00` (very frequently annotated) but `IC_topology=1.00` (no descendants).
     - **`IC` high, `IC_topology` low**: a broad term with few annotations. `GO:0140852 histone ubiquitin ligase activity` achieves `IC` 10.14 on a *single* annotated protein, yet `IC_topology=0.71` reveals it's close to the root of the DAG. Use `IC_topology` to spot these; raw `IC` makes them look very informative.
 
-**Notes:** :open_book:
+:open_book: **Notes:**
 - Coverage in the `noiea` corpus is small for rarely studied terms, where 57-63% of terms have no annotation support.
 > [!NOTE] 
 > Restricting to the DeepFRI2 term space is much better: 851/858 MF, 3,796/3,994 BP, 572/615 CC.
