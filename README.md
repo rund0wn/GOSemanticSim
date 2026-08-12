@@ -79,9 +79,8 @@ Columns: `GO_ID`, `name`, `namespace`, `depth`, `n_annotated`, `IC`, `IC_topolog
 
 **Useful information:**
 - `IC` = `-log(n_annotated / corpus_size)` where the corpus is the reference data (`.gaf`). This is what `calc_MF_Lin_set_sim.py` uses.
-> [!NOTE]
-> Each sub-ontology has its own root and corpus size, so IC is computed per sub-ontology.
-> `IC = 0` means *maximally general* (root), but `goatools` also returns `0.0` for terms without annotations. The two are distinguished by `n_annotated`, where unsupported terms get a blank `IC`, not a zero.
+    - *Each sub-ontology has its own root and corpus size, so IC is computed per sub-ontology.*
+    - *`IC = 0` means maximally general (root), but `goatools` also returns `0.0` for terms without annotations. The two are distinguished by `n_annotated`, where unsupported terms get a blank `IC`, not a zero.*
 - `IC_topology` = `1 - log(n_descendants + 1) / log(sub-ontology size)` ([Seco et al. 2004](https://dl.acm.org/doi/10.5555/3000001.3000272)). Derived from the DAG topology *only*, so it doesn't need a corpus. The root scores 0, a leaf scores 1.
 - The two IC columns measure different things and disagree usefully:
     - **`IC` low, `IC_topology` high**: usually well-studied leaf. `GO:0042803 protein homodimerization activity` has `IC=3.00` (very frequently annotated) but `IC_topology=1.00` (no descendants).
