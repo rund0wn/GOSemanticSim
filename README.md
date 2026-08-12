@@ -29,12 +29,13 @@ go_data/
     └── filtered_goa_uniprot_all_noiea.gaf # UniProt GOA, IEA evidence removed
 ```
 
-Both files come from the same release directory
-http://release.geneontology.org/, and that is not incidental: information
-content is computed from the UniProt database annotations `.gaf` against the GO DAG `go.obo`.
+### Details
 
-*Note: The `noiea` gaf does not include `IEA` (electronically inferred) annotations.*
+#### Why these files?
+- Both files come from the same release directory (http://release.geneontology.org/)[http://release.geneontology.org/], and that is not incidental: information content is computed from the UniProt database annotations `.gaf` against the GO DAG `go.obo`.
+- The `noiea` gaf does not include `IEA` (electronically inferred) annotations.
 
+#### Custom versions
 To use a release other than the default, either edit `GO_RELEASE` in
 `calc_MF_Lin_set_sim.py` or pass `--go-obo` / `--gaf` explicitly.
 
@@ -54,17 +55,15 @@ cd Lins_Similarity
 python calc_MF_Lin_set_sim.py {INPUT}.tsv {OUTPUT}.tsv
 ```
 
+**Note:** `GUIDE_semantic_similarity.ipynb` walks through the method.
+
+
 ### Input
 `.tsv` of `Protein<TAB>GO1<TAB>GO2...` (an optional header row may
 start with `Protein`).
 
 ### Output
 `.tsv` of pairwise similarity scores between proteins.
-
-
-*Override the defaults with `--go-obo <path>` and `--gaf <path>`.*
-
-**Note:** `GUIDE_semantic_similarity.ipynb` walks through the method.
 
 ## Groovy usage
 
