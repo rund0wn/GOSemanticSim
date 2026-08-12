@@ -10,6 +10,8 @@ Two independent implementations:
 | `Lins_Similarity/` | Python + [goatools](https://github.com/tanghaibao/goatools) | Computes a pairwise functional similarity matrix (Lin's similarity + BMA) from protein → GO term annotations |
 | `groovy_semantics/` | Groovy + [SML / slib](https://www.semantic-measures-library.org/) | Information content and pairwise/set similarity over the GO DAG |
 
+---
+
 ## Data files (Do this first)
 
 Download GO reference data:
