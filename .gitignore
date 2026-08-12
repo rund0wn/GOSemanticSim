@@ -3,6 +3,9 @@
 go_data/*
 !go_data/download.sh
 
+# --- Generated output ---
+Lins_Similarity/IC_r2025-07-22.tsv
+
 # --- Python ---
 .venv/
 venv/
