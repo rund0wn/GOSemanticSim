@@ -30,20 +30,22 @@ go_data/
     └── filtered_goa_uniprot_all_noiea.gaf # UniProt GOA, IEA evidence removed
 ```
 
-### Details
-#### Why these files?
-- Both files come from the same release directory http://release.geneontology.org/, and that is not incidental: information content is computed from the UniProt database annotations `.gaf` against the GO DAG `go.obo`.
+### More information
+#### Why these specific data files?
+- Both files come from the same release directory http://release.geneontology.org/, and that is not incidental: information content is computed from the UniProt database annotations `.gaf` against the GO DAG `go.obo`. This ensures that the annotations and the DAG will include the exact same terms, and thus all terms will have a valid IC value.
 - The `noiea` gaf does not include `IEA` (electronically inferred) annotations, as there are not "high quality".
 
-#### Custom versions
-To use a release other than the default:
+#### What if I want to use another predictor/GO version?
+If you use a tool/model to generate the annotations, use the *same* release used by the tool/model, which you generally find in their Github repo or publication. If you use database annotations, try to closely match the date of the database release. Databases like UniProt align their releases with GO releases. After identifying the correct version:
+
+1. Download data from the required release:
 
 ```bash
 bash go_data/download.sh {YYYY-MM-DD} # Date of other GO release
 ```
 
-Then either edit `GO_RELEASE` in
-`calc_MF_Lin_set_sim.py` or pass `--go-obo` / `--gaf` explicitly.
+2. Either edit `GO_RELEASE` in `calc_MF_Lin_set_sim.py` OR pass `--go-obo` / `--gaf` explicitly.
+
 
 ---
 
@@ -72,6 +74,31 @@ start with `Protein`).
 
 ### Output
 `.tsv` of pairwise similarity scores between proteins.
+
+3. Generate a GO term → information content table
+
+```bash
+cd Lins_Similarity
+python build_ic_table.py {OUTPUT}.tsv                      # whole MF branch
+python build_ic_table.py {OUTPUT}.tsv --terms my_terms.txt # only these GO IDs
+python build_ic_table.py {OUTPUT}.tsv --namespace BP --covered-only
+```
+
+Columns: `GO_ID`, `name`, `namespace`, `depth`, `n_annotated`, `IC`, `IC_norm`.
+
+`IC` is `-log(n_annotated / corpus_size)` over annotations propagated to
+ancestors — the same counts `calc_MF_Lin_set_sim.py` uses, so the two agree.
+`IC_norm` is always scaled by the branch-wide maximum, so it stays comparable
+across runs that pass different `--terms` lists.
+
+**Reading the table:** `IC = 0` means *maximally general* (the branch root), but
+`goatools` also returns `0.0` for terms absent from the corpus. The two are
+distinguished by `n_annotated` — unsupported terms get a blank `IC`, never a
+zero. Roughly 57% of MF terms have no annotation support in the `noiea` corpus;
+`--covered-only` drops them.
+
+`ND` ("no biological data") and `NOT`-qualified annotations are excluded — this
+is `goatools`' default in `get_id2gos`, not something either script adds.
 
 ---
 
