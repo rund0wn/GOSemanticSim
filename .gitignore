@@ -1,5 +1,7 @@
-# --- Large reference data (see README: download instructions) ---
-go_data/
+# --- Large reference data: ignore everything except the fetch script ---
+# (allow-listing is deliberate -- new releases and .gz intermediates stay ignored)
+go_data/*
+!go_data/download.sh
 
 # --- Python ---
 .venv/

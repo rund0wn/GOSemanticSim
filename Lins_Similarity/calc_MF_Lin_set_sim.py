@@ -8,8 +8,9 @@ from goatools.semantic import TermCounts, lin_sim
 from utils import Ontology
 
 # --- Input / output paths ---
-GO_OBO_PATH = "../go_data/2019-06-09/go.obo"        # GO DAG (must match the release the annotations/IC were computed against)
-UNIPROT_GAF = "../go_data/filtered_goa_uniprot_all_noiea.gaf"  # background annotation corpus used for IC
+GO_RELEASE = "2025-07-22"                           # fetch with: bash ../go_data/download.sh
+GO_OBO_PATH = f"../go_data/{GO_RELEASE}/go.obo"     # GO DAG (must match the release the annotations/IC were computed against)
+UNIPROT_GAF = f"../go_data/{GO_RELEASE}/filtered_goa_uniprot_all_noiea.gaf"  # background annotation corpus used for IC
 
 # --- Run as 'python calc_MF_Lin_set_sim.py <input_path> <output_path> [Optionaal: --go-obo <go_obo_path> --gaf <gaf_path>'] ---
 parser = argparse.ArgumentParser(description="Compute a BMA Lin-similarity matrix for a set of proteins.")
