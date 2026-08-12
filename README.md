@@ -14,7 +14,7 @@ Two independent implementations:
 ## Quick uses :arrow_forward:
 ### IC table
 Read-to-use [information content (IC) table](Lins_Similarity/IC_deepFRI2_preds.tsv) for deepFRI2 output.
-More information in [IC table](#ic-table)
+More information in [Information Content](#information-content)
 
 ### Functional similarity
 Generate a pairwise functional similarity matrix from protein GO term annotations.
@@ -63,7 +63,7 @@ bash go_data/download.sh {YYYY-MM-DD} # Date of other GO release
 
 ---
 
-### IC table
+### Information Content
 To generate a new GO term → information content (IC) table:
 
 ```bash
