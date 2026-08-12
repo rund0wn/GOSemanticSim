@@ -16,7 +16,6 @@ Download GO reference data:
 
 ```bash
 bash go_data/download.sh            # DEFAULT (r2025-07-22)
-bash go_data/download.sh {YYYY-MM-DD} # To download any other release
 ```
 
 Expected output:
@@ -36,7 +35,13 @@ go_data/
 - The `noiea` gaf does not include `IEA` (electronically inferred) annotations.
 
 #### Custom versions
-To use a release other than the default, either edit `GO_RELEASE` in
+To use a release other than the default:
+
+```bash
+bash go_data/download.sh {YYYY-MM-DD} # Date of other GO release
+```
+
+Then either edit `GO_RELEASE` in
 `calc_MF_Lin_set_sim.py` or pass `--go-obo` / `--gaf` explicitly.
 
 ## Python usage
