@@ -1,0 +1,26 @@
+# --- Large reference data (see README: download instructions) ---
+go_data/
+
+# --- Python ---
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# --- Groovy / JVM ---
+.groovy/
+*.class
+*.jar
+
+# --- macOS ---
+.DS_Store
+._*
+
+# --- Editors ---
+.idea/
+.vscode/
+*.swp

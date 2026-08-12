@@ -1,0 +1,9 @@
+goatools
+numpy
+pandas
+scipy
+statsmodels
+openpyxl
+xlsxwriter
+pydot
+requests
