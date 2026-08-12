@@ -34,7 +34,8 @@ branch = sorted({o.id for o in godag.values()
                  if o.namespace == NAMESPACES[args.namespace] and not o.is_obsolete})
 if args.terms:
     with open(args.terms) as fh:
-        wanted = [ln.split()[0] for ln in fh if ln.strip() and not ln.startswith("#")]
+        # Take the first column of any GO:-prefixed line; skips headers, comments and blanks
+        wanted = [ln.split()[0] for ln in fh if ln.startswith("GO:")]
     missing = [t for t in wanted if t not in godag]
     # Normalise alt_ids to primary IDs, preserving the caller's order
     seen, go_ids = set(), []
