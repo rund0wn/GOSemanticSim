@@ -42,7 +42,9 @@ bash go_data/download.sh {YYYY-MM-DD} # Date of other GO release
 
 Then either edit `GO_RELEASE` in
 `calc_MF_Lin_set_sim.py` or pass `--go-obo` / `--gaf` explicitly.
+
 ---
+
 ## Python usage
 
 1. Create virtual environment
