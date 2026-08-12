@@ -70,7 +70,9 @@ start with `Protein`).
 
 ### Output
 `.tsv` of pairwise similarity scores between proteins.
+
 ---
+
 ## Groovy usage
 
 The scripts use `@Grab` to pull `slib-sml` and `gpars` on first run, so Groovy
