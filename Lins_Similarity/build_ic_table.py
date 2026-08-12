@@ -1,6 +1,7 @@
 import argparse
 import csv
 import json
+import math
 from pathlib import Path
 
 from goatools.anno.gaf_reader import GafReader
@@ -55,9 +56,8 @@ for ns in namespaces:
     termcounts = TermCounts(godag, gaf.get_id2gos(namespace=ns))
     branch = sorted({o.id for o in godag.values()
                      if o.namespace == NAMESPACES[ns] and not o.is_obsolete})
-    # Normalise against the whole branch, not the selected subset, so IC_norm stays
-    # comparable across runs that pass different --terms lists.
     max_ic = max((get_info_content(t, termcounts) for t in branch), default=0.0)
+    log_branch = math.log(len(branch))
     go_ids = [t for t in branch if t in selected] if selected is not None else branch
 
     uncovered = 0
@@ -68,6 +68,10 @@ for ns in namespaces:
             if args.covered_only:
                 continue
         ic = get_info_content(go_id, termcounts)
+        # Seco et al. (2004): structure-only IC, from how much of the branch a term
+        # subsumes. No corpus, so it is defined for every term -- including the ones
+        # the GAF never mentions, where IC is blank. Root -> 0, leaf -> 1.
+        ic_topo = 1 - math.log(len(godag[go_id].get_all_children()) + 1) / log_branch
         rows.append({
             "GO_ID": go_id,
             "name": godag[go_id].name,
@@ -75,7 +79,7 @@ for ns in namespaces:
             "depth": godag[go_id].depth,
             "n_annotated": count,
             "IC": f"{ic:.6f}" if count else "",
-            "IC_norm": f"{ic / max_ic:.6f}" if count and max_ic else "",
+            "IC_topology": f"{ic_topo:.6f}",
         })
     summary.append((ns, termcounts.get_total_count(NAMESPACES[ns]), len(go_ids), uncovered, max_ic))
 

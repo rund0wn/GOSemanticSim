@@ -11,7 +11,7 @@ Two independent implementations:
 | `groovy_semantics/` | Groovy + [SML / slib](https://www.semantic-measures-library.org/) | Information content and pairwise/set similarity over the GO DAG |
 
 
-## Quick run
+## Quick run :arrow_forward:
 Generate a pairwise functional similarity matrix from protein GO term annotations.
 
 1. Download reference data (`.gaf` and `.obo`)
@@ -29,10 +29,9 @@ cd Lins_Similarity
 python calc_MF_Lin_set_sim.py {INPUT}.tsv {OUTPUT}.tsv
 ```
 
-Technical Details
----
+## Technical Details :gear:
 
-## Reference data
+### Reference data
 
 Download GO reference data:
 
@@ -50,12 +49,12 @@ go_data/
     └── filtered_goa_uniprot_all_noiea.gaf # UniProt GOA, IEA evidence removed
 ```
 
-### More information
-#### Why these specific data files?
+#### More information
+##### Why these specific data files?
 - Both files come from the same release directory http://release.geneontology.org/, and that is not incidental: information content is computed from the UniProt database annotations `.gaf` against the GO DAG `go.obo`. This ensures that the annotations and the DAG will include the exact same terms, and thus all terms will have a valid IC value.
 - The `noiea` gaf does not include `IEA` (electronically inferred) annotations, as there are not "high quality".
 
-#### What if I want to use another predictor/GO version?
+##### What if I want to use another predictor/GO version?
 If you use a tool/model to generate the annotations, use the *same* release used by the tool/model, which you generally find in their Github repo or publication. If you use database annotations, try to closely match the date of the database release. Databases like UniProt align their releases with GO releases. After identifying the correct version:
 
 1. Download data from the required release:
@@ -68,79 +67,58 @@ bash go_data/download.sh {YYYY-MM-DD} # Date of other GO release
 
 ---
 
-## IC table
+### IC table
 To generate a GO term → information content (IC) table:
 
 ```bash
 cd Lins_Similarity
-python build_ic_table.py {OUTPUT}.tsv                              # all three branches, every term
-python build_ic_table.py {OUTPUT}.tsv --terms ../terms_deepFRI2    # only the predictor's terms
+python build_ic_table.py {OUTPUT}.tsv                              # all three sub-ontologies, every term
+python build_ic_table.py {OUTPUT}.tsv --terms ../terms_deepFRI2    # only terms predictable by deepFRI2
 python build_ic_table.py {OUTPUT}.tsv --namespace BP --covered-only
 ```
 
 | Option | Effect |
 |---|---|
-| *(none)* | Every non-obsolete term in MF, BP and CC — 39,906 rows |
-| `--terms {DIR}` | Restrict to the GO IDs in that directory's `*.json` files |
-| `--namespace {MF,BP,CC}` | Restrict to one branch |
-| `--covered-only` | Drop terms with no annotation support |
+| *(none)* | Every non-obsolete term in MF, BP and CC (39,906 terms) |
+| `--terms {DIR}` | Restrict to the GO IDs in the specified directory's `*.json` files |
+| `--namespace {MF,BP,CC}` | Restrict to one sub-ontology |
+| `--covered-only` | Drop terms without annotations |
 
-Columns: `GO_ID`, `name`, `namespace`, `depth`, `n_annotated`, `IC`, `IC_norm`.
+Columns: `GO_ID`, `name`, `namespace`, `depth`, `n_annotated`, `IC`, `IC_topology`.
 
-### `--terms` input format
-
-A directory of JSON files, one per sub-ontology, each an index → GO ID map as
-written by the predictor:
-
-```json
-{"0": "GO:0046875", "1": "GO:0003723", "2": "GO:0019001", ...}
-```
-
-Every `*.json` in the directory is read and the maps are merged. Each term's
-branch is taken from the GO DAG rather than the filename, so the files can be
-named anything.
-
-### Reading the table
-
-`IC` is `-log(n_annotated / corpus_size)` over annotations propagated to
-ancestors — the same counts `calc_MF_Lin_set_sim.py` uses, so the two agree.
-Each branch has its own root and corpus size, so IC is computed per branch.
-
-`IC = 0` means *maximally general* (the branch root), but `goatools` also
-returns `0.0` for terms absent from the corpus. The two are distinguished by
-`n_annotated` — unsupported terms get a blank `IC`, never a zero.
-
-`IC_norm` is always scaled by the **branch-wide** maximum, never by the selected
-subset, so a term's value does not change with which other terms you asked for.
-It is comparable across runs sharing a corpus and GO release, but not across
-different ones — the ceiling is `ln(corpus_size)`, which moves when the corpus
-does.
-
-Coverage in the `noiea` corpus is thin for rarely studied terms — 57% of MF,
-57% of BP and 63% of CC terms have no annotation support. Restricted to the
-DeepFRI2 term space it is far better: 851/858 MF, 3,796/3,994 BP, 572/615 CC.
-`--covered-only` drops the rest.
-
-`ND` ("no biological data") and `NOT`-qualified annotations are excluded — this
-is `goatools`' default in `get_id2gos`, not something either script adds.
+**Notes:**
+- `IC` = `-log(n_annotated / corpus_size)` where the corpus is the reference data (`.gaf`). The same counts `calc_MF_Lin_set_sim.py` uses.
+    > [!NOTE]
+    > Each sub-ontology has its own root and corpus size, so IC is computed per sub-ontology.
+- `IC = 0` means *maximally general* (the sub-ontology root), but `goatools` also returns `0.0` for terms absent from the corpus. The two are distinguished by `n_annotated`, where unsupported terms get a blank `IC`, not a zero.
+- `IC_topology` = `1 - log(n_descendants + 1) / log(sub-ontology size)` ([Seco et al. 2004](https://dl.acm.org/doi/10.5555/3000001.3000272)). Derived from the DAG structure alone — how much of its sub-ontology a term subsumes — so it needs no corpus. The root scores 0, a leaf scores 1.
+    > [!NOTE]
+    > Because it ignores annotations, it is defined for **every** term, including the 23,070 that have no corpus support and therefore a blank `IC`.
+- The two IC columns measure different things and disagree usefully (Pearson *r* ≈ 0.61–0.70, Spearman ρ ≈ 0.48–0.56 — correlated, not redundant):
+    - **`IC` low, `IC_topology` high** — a well-studied leaf. `GO:0042803 protein homodimerization activity` has `IC=3.00` (very frequently annotated) but `IC_topology=1.00` (no descendants).
+    - **`IC` high, `IC_topology` low** — a broad term nobody has annotated. `GO:0140852 histone ubiquitin ligase activity` hits the `IC` ceiling of 10.14 on a *single* annotated protein, yet `IC_topology=0.71` reveals it subsumes plenty of the DAG. Use `IC_topology` to spot these; raw `IC` makes them look maximally informative.
+- Coverage in the `noiea` corpus is thin for rarely studied terms — 57% of MF, 57% of BP and 63% of CC terms have no annotation support.
+    > [!NOTE] 
+    > Restricting to the DeepFRI2 term space is much better: 851/858 MF, 3,796/3,994 BP, 572/615 CC.
+- `ND` ("no biological data") and `NOT`-qualified annotations are excluded; this is also `goatools`' default for `get_id2gos`.
 
 ---
 
-## Python usage
+### Python usage
 
 Described in [Quick run](#quick-run)
 **Note:** `GUIDE_semantic_similarity.ipynb` walks through the method.
 
-### Input
+#### Input
 `.tsv` of `Protein<TAB>GO1<TAB>GO2...` (an optional header row may
 start with `Protein`).
 
-### Output
+#### Output
 `.tsv` of pairwise similarity scores between proteins.
 
 ---
 
-## Groovy usage
+### Groovy usage
 
 The scripts use `@Grab` to pull `slib-sml` and `gpars` on first run, so Groovy
 and a JVM are the only prerequisites:
