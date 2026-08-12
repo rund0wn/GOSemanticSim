@@ -29,10 +29,9 @@ go_data/
 ```
 
 ### Details
-
 #### Why these files?
-- Both files come from the same release directory (http://release.geneontology.org/)[http://release.geneontology.org/], and that is not incidental: information content is computed from the UniProt database annotations `.gaf` against the GO DAG `go.obo`.
-- The `noiea` gaf does not include `IEA` (electronically inferred) annotations.
+- Both files come from the same release directory http://release.geneontology.org/, and that is not incidental: information content is computed from the UniProt database annotations `.gaf` against the GO DAG `go.obo`.
+- The `noiea` gaf does not include `IEA` (electronically inferred) annotations, as there are not "high quality".
 
 #### Custom versions
 To use a release other than the default:
@@ -43,7 +42,7 @@ bash go_data/download.sh {YYYY-MM-DD} # Date of other GO release
 
 Then either edit `GO_RELEASE` in
 `calc_MF_Lin_set_sim.py` or pass `--go-obo` / `--gaf` explicitly.
-
+---
 ## Python usage
 
 1. Create virtual environment
@@ -69,7 +68,7 @@ start with `Protein`).
 
 ### Output
 `.tsv` of pairwise similarity scores between proteins.
-
+---
 ## Groovy usage
 
 The scripts use `@Grab` to pull `slib-sml` and `gpars` on first run, so Groovy
